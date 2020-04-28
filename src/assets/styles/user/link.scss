@@ -1,0 +1,28 @@
+.link {
+    &__back {
+        display: inline-flex;
+        margin-bottom: 20px;
+        font-size: 18px;
+        letter-spacing: 1px;
+        text-decoration: none;
+        align-items: center;
+
+        &:hover {
+            &:before {
+                margin-right: 10px;
+            }
+        }
+
+        &:before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('../../assets/images/icons/arrow_left.svg');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 20px;
+            margin-right: 20px;
+            transition: .2s;
+        }
+    }
+}
