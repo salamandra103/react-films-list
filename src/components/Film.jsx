@@ -1,10 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 
 import {NavLink} from 'react-router-dom';
 
-function Film(props) {	
-	console.log(props);
+import { connect } from 'react-redux';
+import { addFavoriteFilm } from '@/store/actions/';
+
+function Film({film, addFavoriteFilm}) {	
+
+	const [statusFavorite, setStatusFavorite] = useState(film.isFavorite)
 	
 	return (
 		<section className="film">
@@ -15,8 +19,11 @@ function Film(props) {
 						<img src="" alt="" className="film__pic" />
 					</div>
 					<div className="film__description">
-						<h3 className="film__title">{props.film.title}</h3>
-						<button type="button" className="film__favorites">Добавить в закладки</button>
+						<h3 className="film__title">{film.title}</h3>
+						<button type="button" className="film__favorites" onClick={() => {
+							addFavoriteFilm(film)
+							setStatusFavorite(film.isFavorite)
+						}}>{statusFavorite ? 'Убрать из закладок' : 'Добавить в закладки'}</button>
 					</div>
 				</div>
 			</div>
@@ -25,6 +32,15 @@ function Film(props) {
 }
 
 Film.propTypes = {
+	film: PropTypes.object
 };
 
-export default Film;
+function mapDispatchToProps(dispatch) {
+	return {
+		addFavoriteFilm: (film) => {
+			dispatch(addFavoriteFilm(film))
+        },
+	}
+}
+
+export default connect((state) => ({}), mapDispatchToProps)(Film);

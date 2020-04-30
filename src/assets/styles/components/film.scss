@@ -48,4 +48,14 @@
         }
     }
 
+    @media(max-width: 768px) {
+        &__inner {
+            flex-flow: column;
+        }
+
+        &__poster {
+            margin: 0 auto 40px;
+        }
+    }
+
 }

@@ -42,4 +42,28 @@
         border-top-right-radius: 999px;
         border-bottom-right-radius: 999px;
     }
+
+    &__tags {
+        margin-top: 20px;
+
+        ul {
+            display: flex;
+            flex-flow: row wrap;
+            margin: 0 -5px;
+        }
+
+        li {
+            background-color: $yellow;
+            border-radius: 999px;
+            padding: 3px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: .2s;
+
+            &:hover {
+                transform: translateY(-2px);
+
+            }
+        }
+    }
 }

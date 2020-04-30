@@ -3,20 +3,25 @@ export const setSearchText = text => ({
 	text
 });
 
+export const setActiveTags = tag => ({
+	type: "SET_ACTIVE_TAGS", 
+	tag
+});
+
+export const removeActiveTags = tag => ({
+	type: "REMOVE_ACTIVE_TAGS", 
+	tag
+});
+
 export const getFilms = () => ({
 	type: "GET_FILMS",
 })
 
-export const setFavoritesFilms = film => ({
-	type: "SET_FAVORITES",
+export const addFavoriteFilm = film => ({
+	type: "ADD_FAVORITE",
 	film
 })
 
-export const getFavoritesFilms = () => ({
-	type: "GET_FAVORITES",
-
-})
-
-export const loadMoreFilms = count => ({
+export const loadMoreFilms = () => ({
 	type: "LOAD_MORE_FILMS",
 })

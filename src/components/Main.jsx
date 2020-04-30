@@ -5,26 +5,20 @@ import Search from "@/components/Search";
 import FilmsList from '@/components/FilmsList'
 
 import { connect } from 'react-redux';
-
-import {getFilms, getFavoritesFilms, loadMoreFilms} from '@/store/actions/';
+import {getFilms, loadMoreFilms} from '@/store/actions/';
 
 
 function Main(props) {
-	useEffect(() => {			
-		props.getFilms()		
-		props.getFavoritesFilms()		
-	}, [])	
-
-	const [isFavorites, setIsFavorites] = useState(localStorage.getItem('isFavorites') ? localStorage.getItem('isFavorites') : 'false');
-	
+	const [isFavorites, setIsFavorites] = useState(JSON.parse(localStorage.getItem('FAVORITE_TAB_ACTIVE')) || false);
+		
 	function tabChanges(e) {
-		let link = e.target.dataset.tab;
+		let link = e.target.dataset.tab;		
 		if (link === 'all') {
-			setIsFavorites('false');
-			localStorage.setItem('isFavorites', false);
+			setIsFavorites(false);
+			localStorage.setItem('FAVORITE_TAB_ACTIVE', false);
 		} else {
-			setIsFavorites('true');
-			localStorage.setItem('isFavorites', true);
+			setIsFavorites(true);
+			localStorage.setItem('FAVORITE_TAB_ACTIVE', true);
 		}
 	}
 
@@ -33,11 +27,11 @@ function Main(props) {
 			<div className="main__container">
 				<Search></Search>
 				<div className="main__tabs">
-					<a href="#" onClick={tabChanges} data-tab="all" className={`main__tabs-link ${isFavorites == 'false' ? 'active' : ''}`}>Все фильмы</a>
-					<a href="#" onClick={tabChanges} data-tab="favorites" className={`main__tabs-link ${isFavorites == 'true' ? 'active' : ''}`}>Закладки</a>
+					<a href="#" onClick={tabChanges} data-tab="all" className={`main__tabs-link ${isFavorites ? '' : 'active'}`}>Все фильмы</a>
+					<a href="#" onClick={tabChanges} data-tab="favorites" className={`main__tabs-link ${isFavorites ? 'active' : ''}`}>Закладки</a>
 				</div>
-				<FilmsList films={isFavorites === "true" ? props.favorites : props.films}></FilmsList>
-				<button type="button" className="main__more" onClick={() => props.loadMore()}>Показать еще</button>
+				<FilmsList films={isFavorites ? props.films.filter(item => item.isFavorite == true).slice(0, props.itemsSize) : props.films.slice(0, props.itemsSize)}></FilmsList>
+				{props.itemsSize >= props.films.length || isFavorites ? false : <button type="button" className="main__more" onClick={() => props.loadMore()}>Показать еще</button>}
 			</div>
 		</section>
 	);
@@ -45,30 +39,31 @@ function Main(props) {
 
 Main.propTypes = {
 	films: PropTypes.array,
-	favorites: PropTypes.array,
-	getFilms: PropTypes.func,
-	getFavoritesFilms: PropTypes.func
+	itemsSize: PropTypes.number
 };
 
 function mapStateToProps(state) {
 	return {
-		films: !state.search.text ? state.films.items : state.films.items.filter((film, index) => {						
-			return new RegExp(`^${state.search.text.toLowerCase()}`).test(film.title.toLowerCase())
+		films: state.films.items.filter((film, index) => {
+
+			if (state.search.text) {		
+				if (state.search.activeTags.length) {
+					return film.tags.some(tag => state.search.activeTags.some(activeTag => activeTag === tag)) && new RegExp(`^${state.search.text.toLowerCase()}`).test(film.title.toLowerCase())
+				}
+				return new RegExp(`^${state.search.text.toLowerCase()}`).test(film.title.toLowerCase());
+			} 
+
+			if (state.search.activeTags.length) {				
+				return film.tags.some(tag => state.search.activeTags.some(activeTag => activeTag === tag))
+			}
+			return film;
 		}),
-		favorites: !state.search.text ? state.films.favorites : state.films.favorites.filter((film, index) => {						
-			return new RegExp(`^${state.search.text.toLowerCase()}`).test(film.title.toLowerCase())
-		}),
+		itemsSize: state.films.itemsSize
 	}
 }
 
 function mapDispatchToProps(dispatch) {
 	return {
-		getFilms: () => {
-			dispatch(getFilms())
-		},
-		getFavoritesFilms: () => {
-			dispatch(getFavoritesFilms())
-        },
 		loadMore: () => {
 			dispatch(loadMoreFilms())
 			dispatch(getFilms())

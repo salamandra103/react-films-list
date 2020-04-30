@@ -1,8 +1,9 @@
 .main {
     &__container {
-        max-width: 900px;
+        max-width: 930px;
         width: 100%;
         margin: 0 auto;
+        padding: 0 15px;
     }
 
     &__wrapper {}
@@ -41,5 +42,13 @@
         background-color: #ffbc00;
         cursor: pointer;
         transition: .2s;
+    }
+
+    @media(max-width: 768px) {
+        &__tabs {
+            &-link {
+                min-width: 50%;
+            }
+        }
     }
 }

@@ -2,8 +2,7 @@ import dataFilms from '@/data/films.json';
 
 const initialState = {
 	items: [],
-	favorites: [],
-	itemsSize: 10
+	itemsSize: 10,
 };
 
 const films = (state = initialState, action) => {	
@@ -12,67 +11,36 @@ const films = (state = initialState, action) => {
 		return {
 			...state, 
 			items: dataFilms.map((item, index) => {
+				var favoritesStorage = JSON.parse(localStorage.getItem("FAVORITES_FILMS")) || [];
+				
 				item.id = index + 1
 				item.isFavorite = false;
-				if (state.favorites.some(favoritesItem => favoritesItem.title === item.title)) {
+				if (favoritesStorage.some(favorite => favorite.title === item.title)) {
 					item.isFavorite = true;
 				}
 				return item;
-			}).slice(0, state.itemsSize) };
-	case "GET_FAVORITES":		
-		return {...state, favorites: JSON.parse(localStorage.getItem('favoritesFilms')) || []};
-	case "SET_FAVORITES":
-		let arr = state.favorites	
-		if (arr.length) {
-			if (arr.some(item => item.title === action.film.title)) {				
-				arr.forEach((item, index) => {					
-					item.title === action.film.title ? arr.splice(index, 1) : false
-				})
-				localStorage.setItem('favoritesFilms', JSON.stringify(arr))
-				return {
-					...state, 
-					items: state.items.map(item => {
-						return item.title === action.film.title ? {...item, isFavorite: !item.isFavorite} : item
-					}),
-					favorites: arr.map(item => {
-						item.isFavorite = true;
-						return item;
-					})
+			}),
+		}
+	case "ADD_FAVORITE":
+		return {
+			...state,
+			items: state.items.map((item, index) => {
+				var favoritesStorage = JSON.parse(localStorage.getItem("FAVORITES_FILMS")) || [];
+
+				if (item == action.film) {
+					item.isFavorite = !action.film.isFavorite					
+					if (item.isFavorite == true) {
+						favoritesStorage.push(item)
+					} else {
+						favoritesStorage = favoritesStorage.filter(favoriteItem => favoriteItem.title !== action.film.title)
+					}					
+					localStorage.setItem("FAVORITES_FILMS", JSON.stringify(favoritesStorage));
 				}
-			} else {
-				arr.push(action.film)
-				arr = arr.map(item => {
-					item.isFavorite = true;
-					return item;
-				})
-				localStorage.setItem('favoritesFilms', JSON.stringify(arr))
-				return {
-					...state, 
-					items: state.items.map(item => {
-						return item.title === action.film.title ? {...item, isFavorite: true} : item
-					}),
-					favorites: arr.map(item => {
-						item.isFavorite = true;
-						return item;
-					})
-				}
-			}
-        } else {
-			arr.push(action.film)			
-			localStorage.setItem('favoritesFilms', JSON.stringify(arr))
-			return {
-				...state, 
-				items: state.items.map(item => {
-					return item.title === action.film.title ? {...item, isFavorite: true} : item
-				}),
-				favorites: arr.map(item => {
-					item.isFavorite = true;
-					return item;
-				})
-			}	
-		} 		
+				return item;
+			})
+		}
 	case "LOAD_MORE_FILMS":
-		return {...state, itemsSize: state.itemsSize + 10}
+		return {...state, itemsSize: state.itemsSize < dataFilms.length ? state.itemsSize + 10 : state.itemsSize}
 	default:
 		return state;
 	}

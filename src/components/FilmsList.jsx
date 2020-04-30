@@ -5,7 +5,7 @@ import imgFavoritesDisable from '../assets/images/icons/favorite_disable.svg';
 import imgFavoritesActive from '../assets/images/icons/favorite_active.svg';
 
 import { connect } from 'react-redux';
-import { setFavoritesFilms } from '@/store/actions/';
+import { addFavoriteFilm, setActiveTags } from '@/store/actions/';
 
 import { useHistory } from 'react-router-dom';
 
@@ -23,13 +23,13 @@ function FilmsList(props) {
                             <div className="films__tags">
                                 <ul className="films__tags-list">
                                     {film.tags ? film.tags.map((tag, tagIndex) => (
-                                        <li className="films__tags-item" key={tagIndex}>
+                                        <li className="films__tags-item" key={tagIndex} onClick={() => props.setActiveTags(tag)}>
                                             <span>{tag}</span>
                                         </li>
                                     )) : false}
                                 </ul>
                             </div>
-                            <div className="films__favorites" onClick={() => props.setFavoritesFilms(film)}>
+                            <div className="films__favorites" onClick={() => props.addFavoriteFilm(film)}>
                                 <img src={film.isFavorite ? imgFavoritesActive : imgFavoritesDisable} alt=""/>
                             </div>
                         </li>
@@ -43,13 +43,17 @@ function FilmsList(props) {
 
 FilmsList.propTypes = {
     films: PropTypes.array,
-    setFavoritesFilms: PropTypes.func,
+    addFavoriteFilm: PropTypes.func,
+    setActiveTags: PropTypes.func,
 };
 
 function mapDispatchToProps(dispatch) {
 	return {
-		setFavoritesFilms: (film) => {
-			dispatch(setFavoritesFilms(film))
+		addFavoriteFilm: (film) => {
+			dispatch(addFavoriteFilm(film))
+        },
+        setActiveTags: (tag) => {
+			dispatch(setActiveTags(tag))
         },
 	}
 }
